@@ -1,0 +1,112 @@
+<style>
+    form {
+        padding-bottom: 10px;
+    }
+
+    .appear {
+        pointer-events: auto;
+    }
+
+    .unactive {
+        pointer-events: none;
+    }
+</style>
+<p>To display the test results, press Ctrl+Shift+K for the FireFox browser. And click the Tests button</p>
+<form id="selectInv">
+    <fieldset>
+        <legend>Choose Environment</legend>
+        <label> Environment
+            <select name="environment">
+                <option value="test">test</option>
+                <option value="production">production</option>
+                <option value="development">development</option>
+            </select>
+            <button type="submit">Change environment</button>
+        </label>
+    </fieldset>
+</form>
+<div id="forms" class="unactive">
+<fieldset>
+    <legend>
+        get SMS code
+    </legend>
+    <label class="buttonTest">
+        This is an error in sms-service
+        <div>Comment: this test must run at test environment. NODE_ENV=test node app_cluster.js</div>
+        <button id="getSMSserviceSMSErrTest" data-testSet="getSMSserviceSMSErrTest">
+            Launch test.
+        </button>
+    </label>
+    <label class="buttonTest">
+        This is an unhandled error
+        <button id="getSMSRealErrTest" data-testSet="getSMSRealErrTest" class="disabled" disabled>
+            Launch test. Как то не так работает код --- пользоваться не буду.
+        </button>
+    </label>
+    <label class="buttonTest">
+        This is a common errors
+        <button id="getSMSTest" data-testSet="getSMSTest">
+            Launch test
+        </button>
+    </label>
+</fieldset>
+
+<fieldset>
+    <legend>
+        Test for registration by phone
+    </legend>
+    <label class="buttonTest">
+        This is an error from dated sms
+        <button id="ownerRegistrationOldSMSTest" data-testSet="ownerRegistrationOldSMSTest" class="disabled" disabled>
+            Launch test. <i>Данные запросы не используются. Не пользоваться.</i>
+        </button>
+    </label>
+    <label class="buttonTest">
+        This is a common error
+        <button id="ownerRegistrationTest" data-testSet="ownerRegistrationTest" class="disabled" disabled>
+            Launch test. <i>Данные запросы не используются. Не пользоваться.</i>
+        </button>
+    </label>
+</fieldset>
+<fieldset>
+    <legend>
+        Test for check accessToken
+    </legend>
+    <label class="buttonTest">
+        This is a common error
+        <input type="text" id="putOnToken"> Put on token
+        <button id="checkTokenTest" data-testSet="checkTokenTest">
+            Launch test
+        </button>
+    </label>
+</fieldset>
+
+<fieldset>
+    <legend>
+        Test for get token
+    </legend>
+    <label class="buttonTest">
+        This is a common error
+        <input type="text" id="gettokensmscode"> Put on sms-code
+        <button id="getTokensTest" data-testSet="getTokensTest">
+            Launch test
+        </button>
+    </label>
+</fieldset>
+
+<fieldset>
+    <legend>
+        Testing
+    </legend>
+    <label class="buttonTest">
+        This is a testing
+        <input type="text" id="putDataTesting" data-testSet="putDataTesting">put data
+        <button id="getTesting" data-testSet="getTesting">
+            Launch test
+        </button>
+    </label>
+</fieldset>
+</div>
+<script type="module">
+    import "./js/tests/test.js"
+</script>

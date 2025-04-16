@@ -1,0 +1,11 @@
+body {
+    background-color: gainsboro;
+}
+.buttonTest {
+    display: block;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.disabled {
+    pointer-events: none;
+}
