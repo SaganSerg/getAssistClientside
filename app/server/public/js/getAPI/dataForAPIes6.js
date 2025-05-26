@@ -25,6 +25,12 @@ const responses = [
     },
     universalResponses,
     {
+        "result": 'ERR',
+        "description": "The account associated with this phone number is marked for deletion.",
+        "responseCode": "0001004",
+        "discriptionRus": "Аккаунт, ассоциированный с таким номером телефона, помечен на удаление"
+    },
+    {
         "result": 'OK',
         "description": "SMS is sent",
         "responseCode": "0010000",
@@ -40,6 +46,7 @@ const responses = [
         "result": 'ERR',
         "description": "For this telephone number the SMS request has already been made",
         "responseCode": "0011001",
+        "smsTimeout": 0,
         "discriptionRus": "Для данного телефона смс-ка уже отправлена. Скорее всего --- это означает, что не прошел еще временной период в течении которого смс-ку отправлять нельзя"
     },
     {
@@ -48,6 +55,7 @@ const responses = [
         "responseCode": "0011002",
         "discriptionRus": "Такой номер телефона уже зарегистрирован в рамках другого процесса регистрации. Такое возможно из-за многопоточности"
     },
+    
     {
         "result": 'OK',
         "description": "Owner is registered by telephone",
@@ -96,6 +104,12 @@ const responses = [
         "discriptionRus": "Токен верный"
     },
     {
+        "result": "OK",
+        "description": "The account associated with this token has been marked for deletion.",
+        "responseCode": "0031000",
+        "discriptionRus": "Аккаунт, ассоциированный с данным токеном, помечен на удаление."
+    },
+    {
         "result": 'OK',
         "description": "Tokens are get",
         "responseCode": "0040000",
@@ -109,7 +123,10 @@ const responses = [
                 "connectedUserAgentName": ""
             }
         ],
+        "status": "",
+        "userName": "",
         "discriptionRus": "Токен передан"
+
     },
     {
         "result": 'ERR',
@@ -134,6 +151,129 @@ const responses = [
         "description": "the owner was already registered",
         "responseCode": "0041003",
         "discriptionRus": "Пользователь был уже зарегестрирован. Такое может быть из-за многопоточности"
+    },
+    {
+        "result": 'ERR',
+        "description": "The account associated with this token has been marked for deletion.",
+        "responseCode": "0041004",
+        "discriptionRus": "Токен не отправлен. Потому что аккант помечен на удаление."
+    },
+    {
+        "result": 'OK',
+        "description": "The legality of the device has been confirmed. Data has been transferred.",
+        "responseCode": "0050000",
+        "discriptionRus": "Легальность устройства поддтерждена. Данные переданы.",
+        "data": {
+            "id": 0,
+            "bar": '',
+            "qr": '',
+            "type": '',
+            "role": '',
+            "mac": '',
+            "prodtime": '',
+            "fwversion": ''
+        }
+    },
+    {
+        "result": 'ERR',
+        "description": "The device with this QR code is not registered",
+        "responseCode": "0051000",
+        "discriptionRus": "Устройство с таким qr-кодом не зарегестрировано"
+    },
+    {
+        "result": 'ERR',
+        "description": "Not all data is available in the database for this device.",
+        "responseCode": "0051001",
+        "discriptionRus": "Для данного устройства в базе присутствуют не все данные"
+    },
+    {
+        "result": 'OK',
+        "description": "Email sent",
+        "responseCode": "0060000",
+        "discriptionRus": "Письмо на электронную почту отправлено"
+    },
+    {
+        "result": 'ERR',
+        "description": "Email address is missing from message",
+        "responseCode": "0061000",
+        "discriptionRus": "Адрес электронной почты отсутствует в сообщении"
+    },
+    {
+        "result": 'ERR',
+        "description": "The email address contains more than 50 characters. This is too long.",
+        "responseCode": "0061001",
+        "discriptionRus": "Адрес электронной почты содержить более 50 симоволов. Это слишком длинный адрес"
+    },
+    {
+        "result": 'ERR',
+        "description": "The email address does not look like an email address",
+        "responseCode": "0061002",
+        "discriptionRus": "Электронный адрес не похож на электронный адрес"
+    },
+    {
+        "result": 'ERR',
+        "description": "This email address has already been registered as part of another registration process. This is possible due to multithreading",
+        "responseCode": "0061003",
+        "discriptionRus": "Такой адрес электронной почты уже зарегистрирован в рамках другого процесса регистрации. Такое возможно из-за многопоточности"
+    },
+    {
+        "result": 'ERR',
+        "description": "The code has already been sent for this email address. Most likely --- this means that the time period during which the letter cannot be sent has not yet passed",
+        "responseCode": "0061004",
+        "discriptionRus": "Для данного электронного адреса код уже отправлена. Скорее всего --- это означает, что не прошел еще временной период в течении которого письмо отправлять нельзя"
+    },
+    {
+        "result": 'ERR',
+        "description": "The letter with the code could not be sent",
+        "responseCode": "0061005",
+        "discriptionRus": "Письмо с кодом не получилось отправить"
+    },
+
+
+
+
+
+    {
+        "result": 'ERR',
+        "description": "The request is missing either an email address or a code",
+        "responseCode": "0071000",
+        "discriptionRus": "В запросе отсутствует либо электронный адрес, либо код"
+    },
+    {
+        "result": 'ERR',
+        "description": "The number of characters in the code is not equal to the required number",
+        "responseCode": "0071001",
+        "discriptionRus": "Количество символов в коде не равно требуемому"
+    },
+    {
+        "result": 'ERR',
+        "description": "The code contains more than just numbers. It should contain only numbers.",
+        "responseCode": "0071002",
+        "discriptionRus": "В коде присутствуют не только цифры. А должны быть только цифры"
+    },
+    {
+        "result": 'ERR',
+        "description": "The number of characters in the email address is more than 50",
+        "responseCode": "0071003",
+        "discriptionRus": "Количество символов в адресе электронной почты больше 50"
+    },
+    {
+        "result": 'ERR',
+        "description": "The email address does not look like an email address",
+        "responseCode": "0071004",
+        "discriptionRus": "Электронный адрес не похож на электронный адрес"
+    },
+    {
+        "result": 'ERR',
+        "description": "There is no such email address in the database. This means that the code was sent to another address.",
+        "responseCode": "0071005",
+        "discriptionRus": "Такого адреса электронной почты в базе нет. Это значит, что код был отправлен на другой адрес"
+    },
+    {
+        "result": 'ERR',
+        "description": "There is no registration code for this email address, or the code has expired.",
+        "responseCode": "0071006",
+        "discriptionRus": "Для данного электронного адреса отсутствует, либо просрочен код для регистрации"
     },
 ];
 
@@ -232,6 +372,56 @@ const requests = [
         ],
         stepNumber: '004'
     },
+    {
+        title: 'Проверка легальности устойства. И получение его параметров',
+        method: 'POST',
+        uri: '/api/checkLegalDevice',
+        getParameters: [],
+        body: {
+            requestJSON: [
+                { name: `accessToken`, valueDescription: 'token --- символы', ofObligation: true },
+                { name: `deviceQRcode`, valueDescription: 'символы', ofObligation: true },
+            ]
+        },
+        headers: [
+            userAgentHeader
+        ],
+        stepNumber: '005'
+    },
+    {
+        title: 'Запрос кода авторизации на электронную почту',
+        method: 'POST',
+        uri: '/api/getCodeForRegistrationByEmail',
+        getParameters: [],
+        body: {
+            requestJSON: [
+                { name: `email`, valueDescription: 'количество симоволов ограничено 50', ofObligation: true },
+            ]
+        },
+        headers: [
+            userAgentHeader
+        ],
+        stepNumber: '006'
+    },
+    {
+        title: 'Получение токенов по коду отправленному на электронную почту',
+        method: 'POST',
+        uri: '/api/getTokenByEmail',
+        getParameters: [],
+        body: {
+            requestJSON: [ // userName
+                { name: `email`, valueDescription: 'количество симоволов ограничено 50', ofObligation: true },
+                { name: `сode`, valueDescription: 'количество симоволо равно 5', ofObligation: true },
+                { name: `userName`, valueDescription: 'количество симоволов ограничено 50', ofObligation: false },
+            ]
+        },
+        headers: [
+            userAgentHeader
+        ],
+        stepNumber: '007'
+    },
+
+
 ];
 export  {responses,commonTroubles,requests,universalResponses};
 

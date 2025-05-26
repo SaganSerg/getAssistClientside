@@ -1,9 +1,32 @@
 <style>
+    
     form {
         padding-bottom: 10px;
     }
+
+    .appear {
+        pointer-events: auto;
+    }
+
+    .unactive {
+        pointer-events: none;
+    }
 </style>
-<form id="registration">
+<form id="chooseEnvironment">
+    <fieldset>
+        <legend>Choose Environment</legend>
+        <label> Environment
+            <select name="environment">
+                <option value="test">test</option>
+                <option value="production">production</option>
+                <option value="development">development</option>
+            </select>
+            <button type="submit">login</button>
+        </label>
+    </fieldset>
+</form>
+<div id="forms" class="unactive">
+{{!-- <form id="registration">
     <fieldset>
         <legend>Registration</legend>
         <label>username<input type="text" name="username"></label>
@@ -67,7 +90,7 @@
         <label>token<input type="text" name="token"></label>
         <button type="submit">test</button>
     </fieldset>
-</form>
+</form> --}}
 <form id="getSMSСodeForRegistrationByTelephone">
     <fieldset>
         <legend>getSMSСodeForRegistrationByTelephone</legend>
@@ -76,6 +99,31 @@
         <button type="submit">getSMSСodeForRegistrationByTelephone</button>
     </fieldset>
 </form>
+<form id="getToken">
+    <fieldset>
+        <legend>getToken</legend>
+        <label>telephoneNumber<input type="text" name="telephoneNumber"></label>
+        <label>smsCode<input type="text" name="smsCode"></label>
+        <label>userName<input type="text" name="userName"></label>
+        <button type="submit">getToken</button>
+    </fieldset>
+</form>
+<form id="checkQRcode">
+    <fieldset>
+        <legend>checkQRcode</legend>
+        <label>qr<input type="text" name="qr"></label>
+        <label>token<input type="text" name="token"></label>
+        <button type="submit">checkQRcode</button>
+    </fieldset>
+</form>
+<form id="getCodeForRegistrationByEmail">
+    <fieldset>
+        <legend>getCodeForRegistrationByEmail</legend>
+        <label>email<input type="email" name="email"></label>
+        <button type="submit">getCodeForRegistrationByEmail</button>
+    </fieldset>
+</form>
+</div>
 {{!-- <form id="experiment">
     <label>data<input type="text" name='data'></label>
     <button type="submit">send data</button>
@@ -91,14 +139,31 @@
             body
         })
     }) */
-    document.getElementById('getSMSСodeForRegistrationByTelephone').addEventListener('submit', (evt) => {
+    let domen = null
+    document.getElementById('chooseEnvironment').addEventListener('submit', (evt) => {
+        evt.preventDefault()
+        const environmentValue = {
+            test: {
+                domen: 'localhost'
+            },
+            production: {
+                domen: 'my.limpoff.ru'
+            },
+            development: {
+                domen: 'localhost'
+            }
+        }
+        domen = environmentValue[evt.target.elements.environment.value].domen
+        document.getElementById('forms').setAttribute('class', 'appear')
+    })
+
+document.getElementById('getCodeForRegistrationByEmail').addEventListener('submit', (evt) => {
         evt.preventDefault()
         const form = evt.target
         const body = JSON.stringify({
-            telephoneNumber: form.elements.telephoneNumber.value,
-            serialNumberOfPhone: form.elements.serialNumberOfPhone.value
+            email: form.elements.email.value
         })  
-        fetch('http://localhost:3000/api/getSMSCodeForRegistrationByTelephone', {
+        fetch(`https://${domen}/api/getCodeForRegistrationByEmail`, {
             method: 'POST',
             headers: new Headers(
                 {
@@ -108,6 +173,71 @@
             body
         })  
     })
+    document.getElementById('getSMSСodeForRegistrationByTelephone').addEventListener('submit', (evt) => {
+        evt.preventDefault()
+        const form = evt.target
+        const body = JSON.stringify({
+            telephoneNumber: form.elements.telephoneNumber.value,
+            serialNumberOfPhone: form.elements.serialNumberOfPhone.value
+        })  
+        fetch(`https://${domen}/api/getSMSCodeForRegistrationByTelephone`, {
+            method: 'POST',
+            headers: new Headers(
+                {
+                    'Content-Type': 'application/json'
+                }
+            ),
+            body
+        })  
+    })
+
+    document.getElementById('getToken').addEventListener('submit', (evt) => {
+        evt.preventDefault()
+        const form = evt.target
+        const body = JSON.stringify({
+            telephoneNumber: form.elements.telephoneNumber.value,
+            smsCode: form.elements.smsCode.value,
+            userName: form.elements.userName.value
+        })
+        fetch(`https://${domen}/api/getTokens`, {
+            method: 'POST',
+            headers: new Headers(
+                {
+                    'Content-Type': 'application/json'
+                }
+            ),
+            body
+        })
+    })
+
+    /* 
+    <form id="checkQRcode">
+    <fieldset>
+        <legend>checkQRcode</legend>
+        <label>qr<input type="text" name="qr"></label>
+        <label>token<input type="text" name="token"></label>
+        <button type="submit">checkQRcode</button>
+    </fieldset>
+</form>
+    */
+    document.getElementById('checkQRcode').addEventListener('submit', (evt) => {
+        evt.preventDefault()
+        const form = evt.target
+        const body = JSON.stringify({
+            accessToken: form.elements.token.value,
+            deviceQRcode: form.elements.qr.value
+        })  
+        fetch(`https://${domen}/api/checkLegalDevice`, {
+            method: 'POST',
+            headers: new Headers(
+                {
+                    'Content-Type': 'application/json'
+                }
+            ),
+            body
+        })  
+    })
+    /*
     document.getElementById('test').addEventListener('submit', (evt) => {
         evt.preventDefault()
         const form = evt.target
@@ -231,5 +361,6 @@
             body
         })
     })
-
+    */
+ 
 </script>

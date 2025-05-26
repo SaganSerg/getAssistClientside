@@ -39,7 +39,7 @@ module.exports = {
                 db.run("DELETE FROM smscodes WHERE telephone_id = ?", [telephoneId])
             }, deleteSmsTime, telephoneId)
             const client = new SmsAero(loginForSMS, keyForSMS)
-            client.send(telephoneNumber, `Код подтверждения --- ${smsCode}`)
+            client.send(telephoneNumber, `GETaxle. Код для регистрации ${smsCode}`)
                 .then(response => {
                     if (app.get('env') === 'test') throw Error('Testing! That`s how it should be.') // это нужно только тестирования
                     res.status(200).json({

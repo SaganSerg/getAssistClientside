@@ -4,7 +4,8 @@ const oneMinutesMMSecond = 60 * 1000 // в миллисекундах
 const oneHourMMSecond = oneHour * 1000 // в миллисекундах
 const oneDaySecond = oneHour * 24 // в секундах
 const oneDayMMSecond = oneDaySecond * 1000 // в миллисекундах
-const deleteSmsTime = oneMinutesMMSecond * 2 // данные по смс-ке удаляются через 3 минуты
+const deleteSmsTime = oneMinutesMMSecond * 1 // данные по смс-ке удаляются через 3 минуты
+const deleteEmailCodeTime = oneHourMMSecond
 
 module.exports = { 
     credentials
@@ -25,8 +26,7 @@ module.exports = {
     , yourEmail: 'sagan.sergei.mih@yandex.ru' // здесь должен быть реальный адрес с которого делается отправка, 
     , httpProtocol: 'http'
     , sessionCookiesExpirationMM: oneDayMMSecond * 1  // 1 день
-    //, cleanConnectionsTime: oneDayMMSecond * 1 // 1 day
-    , cleanConnectionsTime: oneMinutesMMSecond * 2 // 
+    , cleanConnectionsTime: oneDayMMSecond * 1 // 1 day 
     
     // отправка почты
     , smtpKey: 'wgsfizmubelvmdly' // это ключ для сервера отправки почты в данном случае на яндексе
@@ -34,17 +34,24 @@ module.exports = {
     , smtpPort: 465
     , smtpUser: 'sagan.sergei.mih'
 
+    // отправка кода идентификации по электронной почте
+    , deleteEmailCodeTime
+    , emailCodeNumberOfCharacters: 5
+
     // это строка, которая подставляется, если не известен user-agent
     , unknownUserAgent: 'unknown'
 
     // отправка СМС
-    , loginForSMS: 'websagan@gmail.com'
-    , keyForSMS : '69vHPQcZ3dIxagri0rkRsHDlMuB0RCaJ'
-    , deleteSmsTime// данные по смс-ке удаляются через 3 минуты
+    // , loginForSMS: 'websagan@gmail.com' 
+    // , keyForSMS : '69vHPQcZ3dIxagri0rkRsHDlMuB0RCaJ'
+    , loginForSMS: 'info@fixelectro.pro' 
+    , keyForSMS : 'NP_iIYrSDe6TjW1dozqP6JX1ldY1p0hb'
+    , deleteSmsTime
     , smsCodeNumberOfCharacters: 5 // это количество символов в смс коде
     , telephoneNumberMax: 18 // это максимальное количество симоволов в телефоне (нужно для проверки номера телефона)
     , telephoneNumberMin: 11 // это минимальное количество символов в телефоне (нужно для проверки номера телефона)
 
     , maxLenghtOfUserName: 50
     , cleanSmsCodeTime: deleteSmsTime * 2 // данные в любом случае будут 
+    , serverToken: 'kuhalkulkjbgjhgjshgcnbvccvxdsgfdhgfjgvbfdsfgdsawqewydfdtjtjhgfjghfbnvcnbvcjgjhgfttygfdsgfdsgfdsgfdsgdfsgfdsgfdsvbvcxxdhgfdhgfd'
 }
