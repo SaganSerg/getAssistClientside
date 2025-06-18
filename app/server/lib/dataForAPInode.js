@@ -55,7 +55,7 @@ const responses = [
         "responseCode": "0011002",
         "discriptionRus": "Такой номер телефона уже зарегистрирован в рамках другого процесса регистрации. Такое возможно из-за многопоточности"
     },
-    
+
     {
         "result": 'OK',
         "description": "Owner is registered by telephone",
@@ -232,7 +232,7 @@ const responses = [
 
 
 
-
+    // это не завершено
     {
         "result": 'ERR',
         "description": "The request is missing either an email address or a code",
@@ -275,6 +275,42 @@ const responses = [
         "responseCode": "0071006",
         "discriptionRus": "Для данного электронного адреса отсутствует, либо просрочен код для регистрации"
     },
+
+
+    {
+        "result": 'OK',
+        "description": "Configuration saved",
+        "responseCode": "0080000",
+        "discriptionRus": "Конфигурация сохранена"
+    },
+    {
+        "result": 'ERR',
+        "description": "Conf parameter is missing value",
+        "responseCode": "0081000",
+        "discriptionRus": "В параметре conf отсутствует значение"
+    },
+    {
+        "result": 'ERR',
+        "description": "The conf parameter does not contain JSON",
+        "responseCode": "0081001",
+        "discriptionRus": "В параметре conf содержиться не JSON"
+    },
+
+
+    {
+        "result": 'OK',
+        "description": "Configuration transferred",
+        "responseCode": "0090000",
+        "discriptionRus": "Конфигурация передана",
+        "configuration": '',
+        "configurationTimeMark": 0
+    },
+    {
+        "result": 'ERR',
+        "description": "No configuration was saved for this user.",
+        "responseCode": "0091000",
+        "discriptionRus": "Для данного пользователя никакая конфигурация не сохранялась"
+    },
 ];
 
 const commonTroubles = [
@@ -309,8 +345,8 @@ const requests = [
         method: 'POST',
         uri: '/api/getSMSСodeForRegistrationByTelephone',
         getParameters: [
-            { name: 'someParameter', valueDescription: 'какое-то описание'}, // потом удалить
-            { name: 'otherSomeParameter', valueDescription: 'какое-то описание'} // потом удалить
+            { name: 'someParameter', valueDescription: 'какое-то описание' }, // потом удалить
+            { name: 'otherSomeParameter', valueDescription: 'какое-то описание' } // потом удалить
         ],
         body: {
             requestJSON: [
@@ -420,8 +456,55 @@ const requests = [
         ],
         stepNumber: '007'
     },
+    // {
+    //     title: 'Регистрация транспортного средства',
+    //     method: 'POST',
+    //     uri: '/api/vehicleRegistration',
+    //     getParameters: [],
+    //     body: {
+    //         requestJSON: [ // userName
+    //             //  { name: `email`, valueDescription: 'количество симоволов ограничено 50', ofObligation: true }, // 
+    //         ]
+    //     },
+    //     headers: [
+    //         userAgentHeader
+    //     ],
+    //     stepNumber: ''
+    // },
+    {
+        title: 'Сохранение конфигурации',
+        method: 'POST',
+        uri: '/api/setConfig',
+        getParameters: [],
+        body: {
+            requestJSON: [
+                { name: `conf`, valueDescription: 'JSON -- символы', ofObligation: true },
+                { name: `accessToken`, valueDescription: 'token --- символы', ofObligation: true },
+            ]
+        },
+        headers: [
+            userAgentHeader
+        ],
+        stepNumber: '008'
+    },
+    {
+        title: 'Получение конфигурации',
+        method: 'POST',
+        uri: '/api/getConfig',
+        getParameters: [],
+        body: {
+            requestJSON: [
+                { name: `accessToken`, valueDescription: 'token --- символы', ofObligation: true },
+            ]
+        },
+        headers: [
+            userAgentHeader
+        ],
+        stepNumber: '009'
+    },
+
 
 
 ];
-module.exports= {responses,commonTroubles,requests,universalResponses};
+module.exports = { responses, commonTroubles, requests, universalResponses };
 
