@@ -1367,6 +1367,82 @@ app.post('/api/getConfig', (req, res, next) => {
     return res.status(500).json(getResponseJSON('0001003'))
   }
 })
+
+app.post('/api/deleteConfig', (req, res, next) => {
+  try {
+    const body = req?.body, accessToken = body?.accessToken
+    if (!accessToken) return res.status(200).json(getResponseJSON('0001000'))
+    jwt.verify(accessToken, credentials.tokenSecret, (err, decoded) => {
+      try {
+        if (err) {
+          return res.status(200).json(
+            {
+              "result": 'ERR',
+              "description": "Token is wrong",
+              "responseCode": "0001001",
+            }
+          )
+        }
+        db.run('SELECT * FROM users WHERE user_id = ?', [decoded.userId], (err, selectUsersRows) => {
+          try {
+            if (err) return res.status(200).json({
+              "result": 'ERR',
+              "description": `Something went wrong${addTextInComment('ощибка БД SELECT * FROM users WHERE user_id =?')}`,
+              "responseCode": "0001003",
+            })
+            if (selectUsersRows.length > 1) return res.status(200).json({
+              "result": 'ERR',
+              "description": `Something went wrong${addTextInComment('ощибка: после SELECT * FROM users WHERE user_id =? -- selectUsersRows.length > 1')}`,
+              "responseCode": "0001003",
+            })
+            if (selectUsersRows.length == 0) return res.status(200).json({
+              "result": 'ERR',
+              "description": `Something went wrong${addTextInComment('ощибка: после SELECT * FROM users WHERE user_id =? -- selectUsersRows.length == 0')}`,
+              "responseCode": "0001003",
+            })
+            if (selectUsersRows[0]['delete_'] === 1) return res.status(400).json(getResponseJSON('0001004'))
+
+
+            db.run('SELECT owner_id FROM owners WHERE user_id = ?', [decoded.userId], (err, selectOwnersRows) => {
+              try {
+                if (err) return res.status(500).json(getResponseJSON('0001003'))
+                if (selectOwnersRows.length > 1) return res.status(500).json(getResponseJSON('0001003'))
+                if (!selectOwnersRows.length) return res.status(500).json(getResponseJSON('0001003')) // в данном запросе запись в owners уже должна быть. Записть производиться при запросе getToken
+                const ownerId = selectOwnersRows[0].owner_id
+                db.run('SELECT * FROM conf WHERE owner_id = ?', [ownerId], (err, selectConfRows) => {
+                  try {
+                    if (err) return res.status(500).json(getResponseJSON('0001003'))
+                    if (selectConfRows.length > 1) return res.status(500).json(getResponseJSON('0001003'))
+                    if (!selectConfRows.length) return res.status(400).json(getResponseJSON('0101000'))
+                    db.run('DELETE FROM conf WHERE owner_id = ?', [ownerId], (err, deleteConfRows) => {
+                      try {
+                        if (err) return res.status(500).json(getResponseJSON('0001003'))
+                        return res.status(200).json(getResponseJSON('0100000'))
+                      } catch (e) {
+                        return res.status(500).json(getResponseJSON('0001003'))
+                      }
+                    })
+                  } catch (e) {
+                    return res.status(500).json(getResponseJSON('0001003'))
+                  }
+                })
+              } catch (e) {
+                return res.status(500).json(getResponseJSON('0001003'))
+              }
+            })
+          } catch (e) {
+            return res.status(500).json(getResponseJSON('0001003'))
+          }
+        })
+      } catch (e) {
+        return res.status(500).json(getResponseJSON('0001003'))
+      }
+    })
+  } catch (e) {
+    return res.status(500).json(getResponseJSON('0001003'))
+  }
+})
+
 app.get('/api/testrequest', (req, res, next) => {
   if (app.get('env') === 'production') return next()
   console.log(req)
@@ -1382,6 +1458,7 @@ app.get('/api/testrequest', (req, res, next) => {
     })
   })
 })
+
 app.post('/api/signup', function (req, res, next) {
   const username = req.body.username
   db.run('SELECT * FROM users WHERE username = ?', [username], (err, row) => {
@@ -1602,6 +1679,13 @@ app.get('/getAPI', (req, res, next) => {
 // пишу адрес странички чтобы удобней было копировать https://localhost/tests
 // пишу адрес странички чтобы удобней было копировать http://localhost/tests
 // scp -r /home/sagan/Projects/carEquipment/getAssistClientside/app/server root@31.128.50.232:/home
+// ssh root@31.128.50.232 -- это для getAssistClientside
+// export NODE_ENV=production
+// npm install -g forever
+// forever start app.js
+// forever restart app.js
+// forever stop app.js
+// rm -r -- удаление директории со все содержимым
 
 // это конец тестового участка кода
 // app.get('/fail', (req, res) => {

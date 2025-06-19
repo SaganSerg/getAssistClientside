@@ -46,7 +46,7 @@ const responses = [
         "result": 'ERR',
         "description": "For this telephone number the SMS request has already been made",
         "responseCode": "0011001",
-        "smsTimeout": 0,
+        "smsTimeout": '0',
         "discriptionRus": "Для данного телефона смс-ка уже отправлена. Скорее всего --- это означает, что не прошел еще временной период в течении которого смс-ку отправлять нельзя"
     },
     {
@@ -62,11 +62,11 @@ const responses = [
         "responseCode": "0020000",
         "accessToken": "",
         "refreshToken": "",
-        "ownerId": 0,
-        "userId": 0,
+        "ownerId": '0',
+        "userId": '0',
         "connectedUserAgent": [
             {
-                "connectedId": 0,
+                "connectedId": '0',
                 "connectedUserAgentName": ""
             }
         ],
@@ -115,11 +115,11 @@ const responses = [
         "responseCode": "0040000",
         "accessToken": "",
         "refreshToken": "",
-        "ownerId": 0,
-        "userId": 0,
+        "ownerId": '0',
+        "userId": '0',
         "connectedUserAgent": [
             {
-                "connectedId": 0,
+                "connectedId": '0',
                 "connectedUserAgentName": ""
             }
         ],
@@ -164,7 +164,7 @@ const responses = [
         "responseCode": "0050000",
         "discriptionRus": "Легальность устройства поддтерждена. Данные переданы.",
         "data": {
-            "id": 0,
+            "id": '0',
             "bar": '',
             "qr": '',
             "type": '',
@@ -302,14 +302,27 @@ const responses = [
         "description": "Configuration transferred",
         "responseCode": "0090000",
         "discriptionRus": "Конфигурация передана",
-        "configuration": '',
-        "configurationTimeMark": 0
+        "configuration": 'JSON structure',
+        "configurationTimeMark": '0',
     },
     {
         "result": 'ERR',
         "description": "No configuration was saved for this user.",
         "responseCode": "0091000",
-        "discriptionRus": "Для данного пользователя никакая конфигурация не сохранялась"
+        "discriptionRus": "Для данного пользователя никакая конфигурация не сохранялась",
+    },
+
+     {
+        "result": 'OK',
+        "description": "Configuration deleted",
+        "responseCode": "0100000",
+        "discriptionRus": "Конфигурация удалена",
+    },
+    {
+        "result": 'ERR',
+        "description": "There was no configuration in the database",
+        "responseCode": "0101000",
+        "discriptionRus": "Конфигурации в базе не было",
     },
 ];
 
@@ -502,9 +515,24 @@ const requests = [
         ],
         stepNumber: '009'
     },
+    {
+        title: 'Удаление конфигурации',
+        method: 'POST',
+        uri: '/api/deleteConfig',
+        getParameters: [],
+        body: {
+            requestJSON: [
+                { name: `accessToken`, valueDescription: 'token --- символы', ofObligation: true },
+            ]
+        },
+        headers: [
+            userAgentHeader
+        ],
+        stepNumber: '010'
+    },
 
 
 
 ];
-module.exports = { responses, commonTroubles, requests, universalResponses };
+module.exports= { responses, commonTroubles, requests, universalResponses };
 

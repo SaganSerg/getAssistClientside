@@ -1,4 +1,8 @@
-import { responses, commonTroubles, requests } from './dataForAPIes6.js'
+import { 
+    responses, 
+    commonTroubles, 
+    requests 
+} from './dataForAPIes6.js'
 
 let listOfDouble = []
 for (let i = 0; i < responses.length; i++) {

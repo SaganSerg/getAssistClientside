@@ -137,6 +137,13 @@
             <button type="submit">getConfig</button>
         </fieldset>
     </form>
+    <form id="deleteConfig">
+        <fieldset>
+            <legend>deleteConfig</legend>
+            <label>token<input type="text" name="token"></label>
+            <button type="submit">deleteConfig</button>
+        </fieldset>
+    </form>
 </div>
 {{!-- <form id="experiment">
     <label>data<input type="text" name='data'></label>
@@ -195,6 +202,22 @@
             accessToken: form.elements.token.value
         })
         fetch(`https://${domen}/api/getConfig`, {
+            method: 'POST',
+            headers: new Headers(
+                {
+                    'Content-Type': 'application/json'
+                }
+            ),
+            body
+        })
+    })
+    document.getElementById('deleteConfig').addEventListener('submit', (evt) => {
+        evt.preventDefault()
+        const form = evt.target
+        const body = JSON.stringify({
+            accessToken: form.elements.token.value
+        })
+        fetch(`https://${domen}/api/deleteConfig`, {
             method: 'POST',
             headers: new Headers(
                 {
