@@ -973,49 +973,53 @@ app.post('/api/getTokens', (req, res, next) => {
 //     })
 //     })
 // })
-app.post(`/api/checkToken`, (req, res, next) => {
-  const body = req?.body, accessToken = body?.accessToken
-  if (!accessToken) return res.status(200).json({
-    "result": 'ERR',
-    "description": "the request JSON structure does not match URL",
-    "responseCode": "0001000"
-  })
-  jwt.verify(accessToken, credentials.tokenSecret, (err, decoded) => {
-    if (err) {
-      return res.status(500).json(
-        {
-          "result": 'ERR',
-          "description": "Token is wrong",
-          "responseCode": "0001001",
-        }
-      )
-    }
-    db.run('SELECT * FROM users WHERE user_id =?', [decoded.userId], (err, selectUsersRows) => {
-      if (err) return res.status(500).json({
-        "result": 'ERR',
-        "description": `Something went wrong${addTextInComment('ощибка БД SELECT * FROM users WHERE user_id =?')}`,
-        "responseCode": "0001003",
-      })
-      if (selectUsersRows.length > 1) return res.status(500).json({
-        "result": 'ERR',
-        "description": `Something went wrong${addTextInComment('ощибка: после SELECT * FROM users WHERE user_id =? -- selectUsersRows.length > 1')}`,
-        "responseCode": "0001003",
-      })
-      if (selectUsersRows.length == 0) return res.status(200).json({
-        "result": 'ERR',
-        "description": `Something went wrong${addTextInComment('ощибка: после SELECT * FROM users WHERE user_id =? -- selectUsersRows.length == 0')}`,
-        "responseCode": "0001003", // надо исправить соббщать нуно о том, что это не ошибка, а закономерный этап проверки
-      })
-      if (selectUsersRows[0]['delete_'] === 1) return res.status(400).json(getResponseJSON('0001004'))
 
-      return res.status(200).json({
-        "result": 'OK',
-        "description": "Token is try",
-        "responseCode": "0030000",
-        'userName': selectUsersRows[0].user_name ?? "not provided"
-      })
+app.post(`/api/checkToken`, (req, res, next) => {
+  try {
+    const body = req?.body, accessToken = body?.accessToken
+    if (!accessToken) return res.status(200).json(getResponseJSON('0001000'))
+    jwt.verify(accessToken, credentials.tokenSecret, (err, decoded) => {
+      try {
+        if (err) {
+          /* 
+          {
+      expiredAt: 2025-06-24T09:55:06.000Z --- это время истечения времени действия токена
+    }
+          */
+          const jsonResoponse = getResponseJSON('0031001')
+          jsonResoponse.tokenExpireDate = Math.floor((new Date(err.expiredAt).getTime()) / 1000)
+          return res.status(400).json(jsonResoponse)
+        }
+        /* 
+        decoded
+    { 
+      userId: 10, 
+     connectionId: 24, 
+     iat: 1750758251, -- вмрея создания в СЕКУНДАХ
+     exp: 1750761851 -- время истечения действия в СЕКУНДАХ
+     }
+    
+        */
+        db.run('SELECT * FROM users WHERE user_id = ?', [decoded.userId], (err, selectUsersRows) => {
+          try {
+            if (err) return res.status(500).json(getResponseJSON('0001003'))
+            if (selectUsersRows.length > 1) return res.status(500).json(getResponseJSON('0001003'))
+            if (selectUsersRows.length == 0) return res.status(200).json(getResponseJSON('0031002'))
+            if (selectUsersRows[0]['delete_'] === 1) return res.status(400).json(getResponseJSON('0031000'))
+            const jsonResoponse = getResponseJSON('0030000')
+            jsonResoponse.tokenExpireDate = decoded.exp
+            return res.status(200).json(jsonResoponse)
+          } catch (e) {
+            return res.status(500).json(getResponseJSON('0001003'))
+          }
+        })
+      } catch (e) {
+        return res.status(500).json(getResponseJSON('0001003'))
+      }
     })
-  });
+  } catch (e) {
+    return res.status(500).json(getResponseJSON('0001003'))
+  }
 })
 
 app.post('/api/checkLegalDevice', (req, res, next) => {
@@ -1511,29 +1515,70 @@ app.post('/api/logout', authenticateToken, (req, res, next) => { // по дан�
     res.status(200).json({ request: 'good', message: 'Your gadget is not on air' })
   })
 })
-app.post('/api/refreshtoken', authenticateLongToken, (req, res, next) => { // от клиента должен приходить параметер longToken.
-  const { username, connectionId, usersId } = req.user
-  const params = { username, connectionId, usersId }
-  // const getToken = (tokenExpire) => {
-  //     return jwt.sign({ username, usersId, connectionId }, credentials.tokenSecret, { expiresIn: tokenExpire })
-  // }
-  // const token = jwt.sign({ username, usersId, connectionId }, credentials.tokenSecret, { expiresIn: tokenExpire })
-  // const longToken = jwt.sign({ username, usersId, connectionId }, credentials.longTokenSecret, { expiresIn: longTokenExpire })
-  // res.status(200).json({ 
-  //     request: 'good', 
-  //     message: 'You are registered', 
-  //     token: getToken(tokenExpire), 
-  //     longToken: getToken(longTokenExpire)  
-  // })
-  // const getToken = getTokenFunction({ username, connectionId,  usersId }, )
-  res.status(200).json({
-    request: 'good',
-    message: 'You are registered',
-    // token: getToken(tokenExpire), 
-    // longToken: getToken(longTokenExpire)  
-    token: getTokenFunction(params, credentials.tokenSecret)(tokenExpire),
-    longToken: getTokenFunction(params, credentials.longTokenSecret)(longTokenExpire)
-  })
+// app.post('/api/refreshtoken', authenticateLongToken, (req, res, next) => { // от клиента должен приходить параметер longToken.
+//   const { username, connectionId, usersId } = req.user
+//   const params = { username, connectionId, usersId }
+//   // const getToken = (tokenExpire) => {
+//   //     return jwt.sign({ username, usersId, connectionId }, credentials.tokenSecret, { expiresIn: tokenExpire })
+//   // }
+//   // const token = jwt.sign({ username, usersId, connectionId }, credentials.tokenSecret, { expiresIn: tokenExpire })
+//   // const longToken = jwt.sign({ username, usersId, connectionId }, credentials.longTokenSecret, { expiresIn: longTokenExpire })
+//   // res.status(200).json({ 
+//   //     request: 'good', 
+//   //     message: 'You are registered', 
+//   //     token: getToken(tokenExpire), 
+//   //     longToken: getToken(longTokenExpire)  
+//   // })
+//   // const getToken = getTokenFunction({ username, connectionId,  usersId }, )
+//   res.status(200).json({
+//     request: 'good',
+//     message: 'You are registered',
+//     // token: getToken(tokenExpire), 
+//     // longToken: getToken(longTokenExpire)  
+//     token: getTokenFunction(params, credentials.tokenSecret)(tokenExpire),
+//     longToken: getTokenFunction(params, credentials.longTokenSecret)(longTokenExpire)
+//   })
+// })
+app.post('/api/refreshtoken', (req, res, next) => {
+  try {
+    const body = req?.body, refreshToken = body?.refreshToken
+    if (!refreshToken) return res.status(200).json(getResponseJSON('0001000'))
+    jwt.verify(refreshToken, credentials.longTokenSecret, (err, decoded) => {
+      try {
+        if (err) {
+          const jsonResoponse = getResponseJSON('0111002')
+          jsonResoponse.tokenExpireDate = Math.floor((new Date(err.expiredAt).getTime()) / 1000)
+          return res.status(400).json(jsonResoponse)
+        }
+        db.run('SELECT * FROM users WHERE user_id = ?', [decoded.userId], (err, selectUsersRows) => {
+          try {
+            if (err) return res.status(500).json(getResponseJSON('0001003', 'refreshToken 7'))
+            if (selectUsersRows.length > 1) return res.status(500).json(getResponseJSON('0001003', 'refreshToken 6'))
+            if (selectUsersRows.length == 0) return res.status(400).json(getResponseJSON('0111000'))
+            if (selectUsersRows[0]['delete_'] === 1) return res.status(400).json(getResponseJSON('0111001'))
+            const userAgent = req?.headers['user-agent'] ?? 'Unknown'
+            db.run('INSERT INTO connections (connection_userAgent, connection_type, user_id) VALUES (?, ?, ?)', [userAgent, "token", decoded.userId], (err, insertConnectionsRows) => {
+              try {
+                if (err) return res.status(500).json(getResponseJSON('0001003', 'refreshToken 5'))
+                const jsonResoponse = getResponseJSON('0110000')
+                const params = { userId: decoded.userId, connectionId: insertConnectionsRows.insertId}
+                  jsonResoponse.accessToken = getTokenFunction(params, credentials.tokenSecret)(tokenExpire)
+                  return res.status(200).json(jsonResoponse)
+              } catch (e) {
+                return res.status(500).json(getResponseJSON('0001003', 'refreshToken 4'))
+              }
+            })
+          } catch (e) {
+            return res.status(500).json(getResponseJSON('0001003', 'refreshToken 3'))
+          }
+        })
+      } catch (e) {
+        return res.status(500).json(getResponseJSON('0001003', 'refreshToken 2'))
+      }
+    })
+  } catch (e) {
+    return res.status(500).json(getResponseJSON('0001003', 'refreshToken 1'))
+  }
 })
 app.post('/api/test', authenticateToken, (req, res) => { // это реально тестовая вещь
   // const username = req.user.username;

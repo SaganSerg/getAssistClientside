@@ -76,13 +76,7 @@
         </fieldset>
 
     </form>
-    <form id="refreshtoken">
-        <fieldset>
-            <legend>refreshtoken</legend>
-            <label>longToken<input type="text" name="longToken"></label>
-            <button type="submit">refreshtoken</button>
-        </fieldset>
-    </form>
+    
     <form id="test">
         <fieldset>
             <legend>test</legend>
@@ -105,6 +99,13 @@
             <label>smsCode<input type="text" name="smsCode"></label>
             <label>userName<input type="text" name="userName"></label>
             <button type="submit">getToken</button>
+        </fieldset>
+    </form>
+    <form id="checkToken">
+        <fieldset>
+            <legend>checkToken</legend>
+            <label>token<input type="text" name="token"></label>
+            <button type="submit">checkToken</button>
         </fieldset>
     </form>
     <form id="checkQRcode">
@@ -142,6 +143,13 @@
             <legend>deleteConfig</legend>
             <label>token<input type="text" name="token"></label>
             <button type="submit">deleteConfig</button>
+        </fieldset>
+    </form>
+    <form id="refreshtoken">
+        <fieldset>
+            <legend>refreshtoken</legend>
+            <label>refreshToken<input type="text" name="refreshToken"></label>
+            <button type="submit">refreshtoken</button>
         </fieldset>
     </form>
 </div>
@@ -280,7 +288,22 @@
             body
         })
     })
-
+document.getElementById('checkToken').addEventListener('submit', (evt) => {
+        evt.preventDefault()
+        const form = evt.target
+        const body = JSON.stringify({
+            accessToken: form.elements.token.value
+        })
+        fetch(`https://${domen}/api/checkToken`, {
+            method: 'POST',
+            headers: new Headers(
+                {
+                    'Content-Type': 'application/json'
+                }
+            ),
+            body
+        })
+    })
     /* 
     <form id="checkQRcode">
     <fieldset>
@@ -308,6 +331,22 @@
             body
         })
     })
+    document.getElementById('refreshtoken').addEventListener('submit', (evt) => {
+        evt.preventDefault()
+        const form = evt.target
+        const body = JSON.stringify({
+            refreshToken: form.elements.refreshToken.value
+        })  
+        fetch(`https://${domen}/api/refreshtoken`, {
+            method: 'POST',
+            headers: new Headers(
+                {
+                    'Content-Type': 'application/json'
+                }
+            ),
+            body
+        })  
+    })
     /*
     document.getElementById('test').addEventListener('submit', (evt) => {
         evt.preventDefault()
@@ -325,22 +364,7 @@
             body
         })  
     })
-    document.getElementById('refreshtoken').addEventListener('submit', (evt) => {
-        evt.preventDefault()
-        const form = evt.target
-        const body = JSON.stringify({
-            longToken: form.elements.longToken.value
-        })  
-        fetch('http://localhost:3000/api/refreshtoken', {
-            method: 'POST',
-            headers: new Headers(
-                {
-                    'Content-Type': 'application/json'
-                }
-            ),
-            body
-        })  
-    })
+    
     document.getElementById('logout').addEventListener('submit', (evt) => {
         evt.preventDefault()
         const form = evt.target

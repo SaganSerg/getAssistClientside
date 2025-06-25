@@ -21,6 +21,7 @@ module.exports = {
     , sessionDatabase: 'sessions' // sessions
     , longTokenExpire: oneDaySecond * 90 // 90 дней
     , tokenExpire: oneDaySecond * 30 // 30 дней
+    , tokenExpire: oneMinutesMMSecond / 1000 // 1 минута
     , emailTokenExpire: oneDaySecond * 3 // 3 дня
     , domen: 'localhost'
     , yourEmail: 'sagan.sergei.mih@yandex.ru' // здесь должен быть реальный адрес с которого делается отправка, 

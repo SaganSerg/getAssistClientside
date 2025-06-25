@@ -96,19 +96,37 @@ const responses = [
         "responseCode": "0021003",
         "discriptionRus": "Для данного номера телефона уже был зарегестрировать хозяин"
     },
+
+
     {
         "result": "OK",
         "description": "Token is try",
         "responseCode": "0030000",
-        "userName": "",
-        "discriptionRus": "Токен верный"
+        "discriptionRus": "Токен верный",
+        "tokenExpireDate": "0 -- временная метка в секундах"
     },
     {
-        "result": "OK",
+        "result": "ERR",
         "description": "The account associated with this token has been marked for deletion.",
         "responseCode": "0031000",
-        "discriptionRus": "Аккаунт, ассоциированный с данным токеном, помечен на удаление."
+        "discriptionRus": "Аккаунт, ассоциированный с данным токеном, помечен на удаление"
     },
+     
+    {
+        "result": "ERR",
+        "description": "Token expired",
+        "responseCode": "0031001",
+        "discriptionRus": "Срок действия токена истек",
+        "tokenExpireDate": "0 -- временная метка в секундах"
+    },
+    {
+        "result": "ERR",
+        "description": "The account associated with this token is not in the database.",
+        "responseCode": "0031002",
+        "discriptionRus": "Аккаунта, ассоциированного с данным токеном нет в базе"
+    },
+
+
     {
         "result": 'OK',
         "description": "Tokens are get",
@@ -324,6 +342,32 @@ const responses = [
         "responseCode": "0101000",
         "discriptionRus": "Конфигурации в базе не было",
     },
+    {
+        "result": 'OK',
+        "description": "New access token are get",
+        "responseCode": "0110000",
+        "discriptionRus": "Новый access token передан",
+        "accessToken": ''
+    },
+    {
+        "result": 'ERR',
+        "description": "There is no user associated with this token in the database.",
+        "responseCode": "0111000",
+        "discriptionRus": "Пользователя ассициированного с данным токеном в базе нет",
+    },
+    {
+        "result": 'ERR',
+        "description": "There is no user associated with this token in the database.",
+        "responseCode": "0111001",
+        "discriptionRus": "Пользователь ассициированный с данным токеном помечен на удаление",
+    },
+    {
+        "result": 'ERR',
+        "description": "Refresh token expired",
+        "responseCode": "0111002",
+        "discriptionRus": "Срок действия refresh token истек",
+        "tokenExpireDate": "0 -- временная метка в секундах"
+    }
 ];
 
 const commonTroubles = [
@@ -390,7 +434,7 @@ const requests = [
         stepNumber: '002'
     },
     {
-        title: 'Проверка токена (тестовый запрос)',
+        title: 'Проверка токена',
         method: 'POST',
         uri: '/api/checkToken',
         getParameters: [],
@@ -529,6 +573,21 @@ const requests = [
             userAgentHeader
         ],
         stepNumber: '010'
+    },
+    {
+        title: 'Обновление access token',
+        method: 'POST',
+        uri: '/api/refreshtoken',
+        getParameters: [],
+        body: {
+            requestJSON: [
+                { name: `refreshToken`, valueDescription: 'token --- символы', ofObligation: true },
+            ]
+        },
+        headers: [
+            userAgentHeader
+        ],
+        stepNumber: '011'
     },
 
 
